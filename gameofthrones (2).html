@@ -1,0 +1,258 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 1380px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 1380px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#db7093", "font": {"color": "white"}, "id": "engineer_dev", "label": "engineer_dev", "shape": "dot", "title": "engineer_dev Neighbors:\u003cbr\u003eetl\u003cbr\u003essis\u003cbr\u003eterraform\u003cbr\u003efastapi\u003cbr\u003ezabbix\u003cbr\u003esklearn\u003cbr\u003enlp\u003cbr\u003ehadoop\u003cbr\u003eflink\u003cbr\u003ehtml\u003cbr\u003egitlab\u003cbr\u003epython\u003cbr\u003ehdfs\u003cbr\u003esaas\u003cbr\u003efastcluster\u003cbr\u003edagster\u003cbr\u003emlops\u003cbr\u003emysql\u003cbr\u003e\u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430\u003cbr\u003egit\u003cbr\u003eelasticsearch\u003cbr\u003etransact-sql\u003cbr\u003escipy\u003cbr\u003ecloud\u003cbr\u003ejava\u003cbr\u003eaws\u003cbr\u003eredis\u003cbr\u003epowerbi\u003cbr\u003elightgbm\u003cbr\u003edatabases\u003cbr\u003er\u003cbr\u003eesl\u003cbr\u003einformatica\u003cbr\u003eprometheus\u003cbr\u003enosql\u003cbr\u003edocker\u003cbr\u003ehive\u003cbr\u003elinux\u003cbr\u003ematplotlib\u003cbr\u003escikit-learn\u003cbr\u003egraphql\u003cbr\u003enumpy\u003cbr\u003ekafka\u003cbr\u003eansible\u003cbr\u003e\u0441\u0443\u0431\u0434\u003cbr\u003eclickhouse\u003cbr\u003ec#\u003cbr\u003ejupyter\u003cbr\u003egreenplum\u003cbr\u003essas\u003cbr\u003eqliksense\u003cbr\u003esql\u003cbr\u003ejenkins\u003cbr\u003eapi\u003cbr\u003enifi\u003cbr\u003eretail\u003cbr\u003eci/cd\u003cbr\u003euml\u003cbr\u003ekeras\u003cbr\u003escikit\u003cbr\u003eairflow\u003cbr\u003eefl\u003cbr\u003edata\u003cbr\u003ekubernetes\u003cbr\u003epostgresql\u003cbr\u003enginx\u003cbr\u003etdd\u003cbr\u003eimplicit\u003cbr\u003edevops\u003cbr\u003exml\u003cbr\u003eflask\u003cbr\u003eolap\u003cbr\u003enympy\u003cbr\u003espacy\u003cbr\u003ebpmn\u003cbr\u003ejira\u003cbr\u003egrafana\u003cbr\u003ebi\u003cbr\u003e\u043e\u043e\u043f\u003cbr\u003eesp\u003cbr\u003escala\u003cbr\u003etableau\u003cbr\u003edocker-compose\u003cbr\u003etypescript\u003cbr\u003eengineering\u003cbr\u003egroovy\u003cbr\u003eteradata\u003cbr\u003ecdn\u003cbr\u003edwh\u003cbr\u003enode.js\u003cbr\u003eoracle\u003cbr\u003eunix\u003cbr\u003eliquibase\u003cbr\u003etrello\u003cbr\u003eml\u003cbr\u003e\u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0430\u003cbr\u003erabbitmq\u003cbr\u003e\u043b\u0438\u0434\u0435\u0440\u0441\u0442\u0432\u043e\u003cbr\u003espark\u003cbr\u003ebash\u003cbr\u003e\u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c\u003cbr\u003eagile\u003cbr\u003epandas\u003cbr\u003ejavascript", "value": 104}, {"color": "red", "font": {"color": "white"}, "id": "python", "label": "python", "shape": "ellipse", "title": "python Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "red", "font": {"color": "white"}, "id": "sql", "label": "sql", "shape": "ellipse", "title": "sql Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "red", "font": {"color": "white"}, "id": "hadoop", "label": "hadoop", "shape": "ellipse", "title": "hadoop Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "spark", "label": "spark", "shape": "diamond", "title": "spark Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "postgresql", "label": "postgresql", "shape": "diamond", "title": "postgresql Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "linux", "label": "linux", "shape": "diamond", "title": "linux Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "java", "label": "java", "shape": "diamond", "title": "java Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "scala", "label": "scala", "shape": "diamond", "title": "scala Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "etl", "label": "etl", "shape": "diamond", "title": "etl Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "data", "label": "data", "shape": "diamond", "title": "data Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "git", "label": "git", "shape": "diamond", "title": "git Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "docker", "label": "docker", "shape": "diamond", "title": "docker Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "hive", "label": "hive", "shape": "diamond", "title": "hive Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "pandas", "label": "pandas", "shape": "diamond", "title": "pandas Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "dwh", "label": "dwh", "shape": "diamond", "title": "dwh Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "airflow", "label": "airflow", "shape": "diamond", "title": "airflow Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "clickhouse", "label": "clickhouse", "shape": "diamond", "title": "clickhouse Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "kafka", "label": "kafka", "shape": "diamond", "title": "kafka Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "numpy", "label": "numpy", "shape": "diamond", "title": "numpy Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "ml", "label": "ml", "shape": "diamond", "title": "ml Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "bash", "label": "bash", "shape": "diamond", "title": "bash Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "nosql", "label": "nosql", "shape": "diamond", "title": "nosql Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "oracle", "label": "oracle", "shape": "diamond", "title": "oracle Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "\u043e\u043e\u043f", "label": "\u043e\u043e\u043f", "shape": "diamond", "title": "\u043e\u043e\u043f Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "elasticsearch", "label": "elasticsearch", "shape": "diamond", "title": "elasticsearch Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "greenplum", "label": "greenplum", "shape": "diamond", "title": "greenplum Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "kubernetes", "label": "kubernetes", "shape": "diamond", "title": "kubernetes Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "c#", "label": "c#", "shape": "diamond", "title": "c# Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "mlops", "label": "mlops", "shape": "diamond", "title": "mlops Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "uml", "label": "uml", "shape": "diamond", "title": "uml Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "gitlab", "label": "gitlab", "shape": "diamond", "title": "gitlab Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "bi", "label": "bi", "shape": "diamond", "title": "bi Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "powerbi", "label": "powerbi", "shape": "diamond", "title": "powerbi Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "mysql", "label": "mysql", "shape": "diamond", "title": "mysql Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "\u0441\u0443\u0431\u0434", "label": "\u0441\u0443\u0431\u0434", "shape": "diamond", "title": "\u0441\u0443\u0431\u0434 Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "ssis", "label": "ssis", "shape": "diamond", "title": "ssis Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "nifi", "label": "nifi", "shape": "diamond", "title": "nifi Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "flask", "label": "flask", "shape": "diamond", "title": "flask Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "grafana", "label": "grafana", "shape": "diamond", "title": "grafana Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "hdfs", "label": "hdfs", "shape": "diamond", "title": "hdfs Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "agile", "label": "agile", "shape": "diamond", "title": "agile Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430", "label": "\u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430", "shape": "diamond", "title": "\u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430 Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "jenkins", "label": "jenkins", "shape": "diamond", "title": "jenkins Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "ci/cd", "label": "ci/cd", "shape": "diamond", "title": "ci/cd Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "jira", "label": "jira", "shape": "diamond", "title": "jira Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "nympy", "label": "nympy", "shape": "diamond", "title": "nympy Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "api", "label": "api", "shape": "diamond", "title": "api Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "bpmn", "label": "bpmn", "shape": "diamond", "title": "bpmn Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "cloud", "label": "cloud", "shape": "diamond", "title": "cloud Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "teradata", "label": "teradata", "shape": "diamond", "title": "teradata Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "databases", "label": "databases", "shape": "diamond", "title": "databases Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "scipy", "label": "scipy", "shape": "diamond", "title": "scipy Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "scikit", "label": "scikit", "shape": "diamond", "title": "scikit Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "lightgbm", "label": "lightgbm", "shape": "diamond", "title": "lightgbm Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "fastcluster", "label": "fastcluster", "shape": "diamond", "title": "fastcluster Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "implicit", "label": "implicit", "shape": "diamond", "title": "implicit Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "spacy", "label": "spacy", "shape": "diamond", "title": "spacy Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "retail", "label": "retail", "shape": "diamond", "title": "retail Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "dagster", "label": "dagster", "shape": "diamond", "title": "dagster Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "redis", "label": "redis", "shape": "diamond", "title": "redis Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "flink", "label": "flink", "shape": "diamond", "title": "flink Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "html", "label": "html", "shape": "diamond", "title": "html Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "transact-sql", "label": "transact-sql", "shape": "diamond", "title": "transact-sql Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "white", "font": {"color": "white"}, "id": "aws", "label": "aws", "shape": "diamond", "title": "aws Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "rabbitmq", "label": "rabbitmq", "shape": "diamond", "title": "rabbitmq Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "terraform", "label": "terraform", "shape": "diamond", "title": "terraform Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "scikit-learn", "label": "scikit-learn", "shape": "diamond", "title": "scikit-learn Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "matplotlib", "label": "matplotlib", "shape": "diamond", "title": "matplotlib Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "keras", "label": "keras", "shape": "diamond", "title": "keras Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "sklearn", "label": "sklearn", "shape": "diamond", "title": "sklearn Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "prometheus", "label": "prometheus", "shape": "diamond", "title": "prometheus Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "engineering", "label": "engineering", "shape": "diamond", "title": "engineering Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "qliksense", "label": "qliksense", "shape": "diamond", "title": "qliksense Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "trello", "label": "trello", "shape": "diamond", "title": "trello Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "nlp", "label": "nlp", "shape": "diamond", "title": "nlp Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "informatica", "label": "informatica", "shape": "diamond", "title": "informatica Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "r", "label": "r", "shape": "diamond", "title": "r Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "fastapi", "label": "fastapi", "shape": "diamond", "title": "fastapi Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c", "label": "\u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c", "shape": "diamond", "title": "\u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "nginx", "label": "nginx", "shape": "diamond", "title": "nginx Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "devops", "label": "devops", "shape": "diamond", "title": "devops Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "groovy", "label": "groovy", "shape": "diamond", "title": "groovy Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "unix", "label": "unix", "shape": "diamond", "title": "unix Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "zabbix", "label": "zabbix", "shape": "diamond", "title": "zabbix Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "ansible", "label": "ansible", "shape": "diamond", "title": "ansible Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "tableau", "label": "tableau", "shape": "diamond", "title": "tableau Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "saas", "label": "saas", "shape": "diamond", "title": "saas Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "javascript", "label": "javascript", "shape": "diamond", "title": "javascript Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "node.js", "label": "node.js", "shape": "diamond", "title": "node.js Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "typescript", "label": "typescript", "shape": "diamond", "title": "typescript Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "graphql", "label": "graphql", "shape": "diamond", "title": "graphql Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "cdn", "label": "cdn", "shape": "diamond", "title": "cdn Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "tdd", "label": "tdd", "shape": "diamond", "title": "tdd Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "docker-compose", "label": "docker-compose", "shape": "diamond", "title": "docker-compose Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u043b\u0438\u0434\u0435\u0440\u0441\u0442\u0432\u043e", "label": "\u043b\u0438\u0434\u0435\u0440\u0441\u0442\u0432\u043e", "shape": "diamond", "title": "\u043b\u0438\u0434\u0435\u0440\u0441\u0442\u0432\u043e Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "ssas", "label": "ssas", "shape": "diamond", "title": "ssas Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "olap", "label": "olap", "shape": "diamond", "title": "olap Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "jupyter", "label": "jupyter", "shape": "diamond", "title": "jupyter Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "esp", "label": "esp", "shape": "diamond", "title": "esp Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "efl", "label": "efl", "shape": "diamond", "title": "efl Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "esl", "label": "esl", "shape": "diamond", "title": "esl Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0430", "label": "\u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0430", "shape": "diamond", "title": "\u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0430 Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "liquibase", "label": "liquibase", "shape": "diamond", "title": "liquibase Neighbors:\u003cbr\u003eengineer_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "xml", "label": "xml", "shape": "diamond", "title": "xml Neighbors:\u003cbr\u003eengineer_dev\u003cbr\u003edelphi_dev", "value": 2}, {"color": "#db7093", "font": {"color": "white"}, "id": "delphi_dev", "label": "delphi_dev", "shape": "dot", "title": "delphi_dev Neighbors:\u003cbr\u003edelphi\u003cbr\u003earm\u003cbr\u003evba\u003cbr\u003eunidac\u003cbr\u003ephp\u003cbr\u003esoap\u003cbr\u003e\u043e\u043e\u043f\u003cbr\u003ematlab\u003cbr\u003e\u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435\u003cbr\u003e\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435\u003cbr\u003ec/c++\u003cbr\u003ecyberlines.\u003cbr\u003egsm\u003cbr\u003efastcube\u003cbr\u003efastreport\u003cbr\u003eehlib\u003cbr\u003esql\u003cbr\u003ebank2\u003cbr\u003ec++\u003cbr\u003epascal\u003cbr\u003e\u0441\u0430\u043f\u0440\u003cbr\u003e\u0435\u0441\u043a\u0434\u003cbr\u003emssql\u003cbr\u003epython\u003cbr\u003e\u0441++\u003cbr\u003eoracle\u003cbr\u003elinux\u003cbr\u003eembedded\u003cbr\u003e\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u0431\u0430\u043d\u043a.\u0430\u0431\u0441\u003cbr\u003ejson\u003cbr\u003e\u0431\u043b\u0430\u003cbr\u003eexcel\u003cbr\u003eqt\u003cbr\u003e\u0441\u0443\u0431\u0434\u003cbr\u003e\u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430\u003cbr\u003edevexpress\u003cbr\u003emysql\u003cbr\u003egit\u003cbr\u003epl/sql\u003cbr\u003etransact-sql\u003cbr\u003epostgres\u003cbr\u003exml\u003cbr\u003ec#\u003cbr\u003e\u043a\u043e\u043c\u043f\u0430\u0441-3d\u003cbr\u003e\u043c\u0438\u043a\u0440\u043e\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u043b\u0435\u0440\u003cbr\u003edephi\u003cbr\u003estm32\u003cbr\u003ejava", "value": 48}, {"color": "red", "font": {"color": "white"}, "id": "delphi", "label": "delphi", "shape": "ellipse", "title": "delphi Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "pl/sql", "label": "pl/sql", "shape": "diamond", "title": "pl/sql Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "json", "label": "json", "shape": "diamond", "title": "json Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "arm", "label": "arm", "shape": "diamond", "title": "arm Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "c++", "label": "c++", "shape": "diamond", "title": "c++ Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "c/c++", "label": "c/c++", "shape": "diamond", "title": "c/c++ Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "vba", "label": "vba", "shape": "diamond", "title": "vba Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "devexpress", "label": "devexpress", "shape": "diamond", "title": "devexpress Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "fastreport", "label": "fastreport", "shape": "diamond", "title": "fastreport Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "fastcube", "label": "fastcube", "shape": "diamond", "title": "fastcube Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "unidac", "label": "unidac", "shape": "diamond", "title": "unidac Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "soap", "label": "soap", "shape": "diamond", "title": "soap Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "mssql", "label": "mssql", "shape": "diamond", "title": "mssql Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "postgres", "label": "postgres", "shape": "diamond", "title": "postgres Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "excel", "label": "excel", "shape": "diamond", "title": "excel Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "ehlib", "label": "ehlib", "shape": "diamond", "title": "ehlib Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "cyberlines.", "label": "cyberlines.", "shape": "diamond", "title": "cyberlines. Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "dephi", "label": "dephi", "shape": "diamond", "title": "dephi Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u043c\u0438\u043a\u0440\u043e\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u043b\u0435\u0440", "label": "\u043c\u0438\u043a\u0440\u043e\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u043b\u0435\u0440", "shape": "diamond", "title": "\u043c\u0438\u043a\u0440\u043e\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u043b\u0435\u0440 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "embedded", "label": "embedded", "shape": "diamond", "title": "embedded Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "gsm", "label": "gsm", "shape": "diamond", "title": "gsm Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", "label": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", "shape": "diamond", "title": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", "label": "\u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", "shape": "diamond", "title": "\u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u0431\u0430\u043d\u043a.\u0430\u0431\u0441", "label": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u0431\u0430\u043d\u043a.\u0430\u0431\u0441", "shape": "diamond", "title": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u0431\u0430\u043d\u043a.\u0430\u0431\u0441 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "bank2", "label": "bank2", "shape": "diamond", "title": "bank2 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u043a\u043e\u043c\u043f\u0430\u0441-3d", "label": "\u043a\u043e\u043c\u043f\u0430\u0441-3d", "shape": "diamond", "title": "\u043a\u043e\u043c\u043f\u0430\u0441-3d Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0435\u0441\u043a\u0434", "label": "\u0435\u0441\u043a\u0434", "shape": "diamond", "title": "\u0435\u0441\u043a\u0434 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0441\u0430\u043f\u0440", "label": "\u0441\u0430\u043f\u0440", "shape": "diamond", "title": "\u0441\u0430\u043f\u0440 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "qt", "label": "qt", "shape": "diamond", "title": "qt Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "stm32", "label": "stm32", "shape": "diamond", "title": "stm32 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "matlab", "label": "matlab", "shape": "diamond", "title": "matlab Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "pascal", "label": "pascal", "shape": "diamond", "title": "pascal Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0441++", "label": "\u0441++", "shape": "diamond", "title": "\u0441++ Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0431\u043b\u0430", "label": "\u0431\u043b\u0430", "shape": "diamond", "title": "\u0431\u043b\u0430 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "php", "label": "php", "shape": "diamond", "title": "php Neighbors:\u003cbr\u003edelphi_dev", "value": 1}, {"color": "white", "font": {"color": "white"}, "id": "\u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430", "label": "\u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430", "shape": "diamond", "title": "\u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430 Neighbors:\u003cbr\u003edelphi_dev", "value": 1}]);
+                  edges = new vis.DataSet([{"color": "DeepPink", "from": "engineer_dev", "to": "python", "value": 79}, {"color": "DeepPink", "from": "engineer_dev", "to": "sql", "value": 82}, {"color": "DeepPink", "from": "engineer_dev", "to": "hadoop", "value": 29}, {"color": "DeepPink", "from": "engineer_dev", "to": "spark", "value": 26}, {"color": "DeepPink", "from": "engineer_dev", "to": "postgresql", "value": 19}, {"color": "DeepPink", "from": "engineer_dev", "to": "linux", "value": 18}, {"color": "DeepPink", "from": "engineer_dev", "to": "java", "value": 19}, {"color": "DeepPink", "from": "engineer_dev", "to": "scala", "value": 16}, {"color": "DeepPink", "from": "engineer_dev", "to": "etl", "value": 17}, {"color": "DeepPink", "from": "engineer_dev", "to": "data", "value": 26}, {"color": "DeepPink", "from": "engineer_dev", "to": "git", "value": 13}, {"color": "DeepPink", "from": "engineer_dev", "to": "docker", "value": 11}, {"color": "DeepPink", "from": "engineer_dev", "to": "hive", "value": 10}, {"color": "DeepPink", "from": "engineer_dev", "to": "pandas", "value": 9}, {"color": "DeepPink", "from": "engineer_dev", "to": "dwh", "value": 9}, {"color": "DeepPink", "from": "engineer_dev", "to": "airflow", "value": 11}, {"color": "DeepPink", "from": "engineer_dev", "to": "clickhouse", "value": 7}, {"color": "DeepPink", "from": "engineer_dev", "to": "kafka", "value": 6}, {"color": "DeepPink", "from": "engineer_dev", "to": "numpy", "value": 5}, {"color": "DeepPink", "from": "engineer_dev", "to": "ml", "value": 5}, {"color": "DeepPink", "from": "engineer_dev", "to": "bash", "value": 5}, {"color": "DeepPink", "from": "engineer_dev", "to": "nosql", "value": 4}, {"color": "DeepPink", "from": "engineer_dev", "to": "oracle", "value": 6}, {"color": "DeepPink", "from": "engineer_dev", "to": "\u043e\u043e\u043f", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "elasticsearch", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "greenplum", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "kubernetes", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "c#", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "mlops", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "uml", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "gitlab", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "bi", "value": 4}, {"color": "DeepPink", "from": "engineer_dev", "to": "powerbi", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "mysql", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "\u0441\u0443\u0431\u0434", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "ssis", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "nifi", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "flask", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "grafana", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "hdfs", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "agile", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "\u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430", "value": 4}, {"color": "DeepPink", "from": "engineer_dev", "to": "jenkins", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "ci/cd", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "jira", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "nympy", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "api", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "bpmn", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "cloud", "value": 3}, {"color": "DeepPink", "from": "engineer_dev", "to": "teradata", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "databases", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "scipy", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "scikit", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "lightgbm", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "fastcluster", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "implicit", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "spacy", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "retail", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "dagster", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "redis", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "flink", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "html", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "transact-sql", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "aws", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "rabbitmq", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "terraform", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "scikit-learn", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "matplotlib", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "keras", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "sklearn", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "prometheus", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "engineering", "value": 2}, {"color": "DeepPink", "from": "engineer_dev", "to": "qliksense", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "trello", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "nlp", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "informatica", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "r", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "fastapi", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "\u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "nginx", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "devops", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "groovy", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "unix", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "zabbix", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "ansible", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "tableau", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "saas", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "javascript", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "node.js", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "typescript", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "graphql", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "cdn", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "tdd", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "docker-compose", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "\u043b\u0438\u0434\u0435\u0440\u0441\u0442\u0432\u043e", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "ssas", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "olap", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "jupyter", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "esp", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "efl", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "esl", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "\u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0430", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "liquibase", "value": 1}, {"color": "DeepPink", "from": "engineer_dev", "to": "xml", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "delphi", "value": 27}, {"color": "gold", "from": "delphi_dev", "to": "sql", "value": 28}, {"color": "gold", "from": "delphi_dev", "to": "oracle", "value": 14}, {"color": "gold", "from": "delphi_dev", "to": "\u043e\u043e\u043f", "value": 6}, {"color": "gold", "from": "delphi_dev", "to": "pl/sql", "value": 8}, {"color": "gold", "from": "delphi_dev", "to": "c#", "value": 6}, {"color": "gold", "from": "delphi_dev", "to": "python", "value": 6}, {"color": "gold", "from": "delphi_dev", "to": "mysql", "value": 3}, {"color": "gold", "from": "delphi_dev", "to": "xml", "value": 3}, {"color": "gold", "from": "delphi_dev", "to": "transact-sql", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "json", "value": 3}, {"color": "gold", "from": "delphi_dev", "to": "arm", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "c++", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "c/c++", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "vba", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "linux", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "java", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "devexpress", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "fastreport", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "fastcube", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "unidac", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "soap", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "mssql", "value": 2}, {"color": "gold", "from": "delphi_dev", "to": "postgres", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "excel", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "ehlib", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "cyberlines.", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "dephi", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "git", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u043c\u0438\u043a\u0440\u043e\u043a\u043e\u043d\u0442\u0440\u043e\u043b\u043b\u0435\u0440", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "embedded", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "gsm", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u0431\u0430\u043d\u043a.\u0430\u0431\u0441", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "bank2", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u043a\u043e\u043c\u043f\u0430\u0441-3d", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u0435\u0441\u043a\u0434", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u0441\u0430\u043f\u0440", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "qt", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "stm32", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "matlab", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "pascal", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u0441++", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u0431\u043b\u0430", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "php", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u0441\u0443\u0431\u0434", "value": 1}, {"color": "gold", "from": "delphi_dev", "to": "\u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430", "value": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
